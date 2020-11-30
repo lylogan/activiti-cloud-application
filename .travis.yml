@@ -1,4 +1,3 @@
-
 env:
   global:
   - ORG='activiti'
@@ -10,7 +9,7 @@ env:
   - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-180}
 
 stages:
-- name: error
+  - name: error
 
 install: skip
 
@@ -23,7 +22,7 @@ jobs:
   - name: Call invalid v2
     stage: error
     script: |
-    (
-      set -e
-      make invalid
-    )
+          (
+            set -e
+            make invalid
+          )
