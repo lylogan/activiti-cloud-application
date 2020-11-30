@@ -96,10 +96,9 @@ publish:
 
 invalid: $(CHARTS)
 $(CHARTS):
-	echo $@; \
-	cd $@; \
-	pwd;\
-	cd -;
+	echo $@ && \
+	cd $@ && \
+	pwd 
 
 update-common-helm-chart-version:
 	@for CHART in $(CHARTS) ; do \
