@@ -94,12 +94,12 @@ publish:
 		cd - ; \
 	done
 
-invalid:
-	@for CHART in $(CHARTS) ; do \
-		cd $$CHART ; \
-		echo $(CURRENT); \
-		cd - ; \
-	done
+invalid: $(CHARTS)
+$(CHARTS):
+	echo $@; \
+	cd $@; \
+	pwd;\
+	cd -;
 
 update-common-helm-chart-version:
 	@for CHART in $(CHARTS) ; do \
