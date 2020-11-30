@@ -9,8 +9,6 @@ env:
   - HELM_REPO=stable
   - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-180}
 
-before_script:
-
 stages:
 - name: error
 
