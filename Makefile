@@ -1,16 +1,14 @@
 CURRENT=$(shell pwd)
 NAME := $(or $(APP_NAME),$(shell basename $(CURRENT)))
 OS := $(shell uname)
-ACTIVITI_CLOUD_VERSION := $(shell grep -oPm1 "(?<=<activiti-cloud.version>)[^<]+" "activiti-cloud-dependencies/pom.xml")
-RELEASE_VERSION := $(or $(shell cat VERSION), $(shell mvn help:evaluate -Dexpression=project.version -q -DforceStdout))
 ACTIVITI_CLOUD_FULL_EXAMPLE_DIR := .updatebot-repos/github/activiti/activiti-cloud-full-chart/charts/activiti-cloud-full-example
 ACTIVITI_CLOUD_FULL_CHART_VERSIONS := runtime-bundle $(VERSION) \
 									  activiti-cloud-connector $(VERSION) \
     								  activiti-cloud-query $(VERSION)  \
     								  activiti-cloud-modeling $(VERSION)
-    
+
 CHARTS := "activiti-cloud-query/charts/activiti-cloud-query" \
-	      "example-runtime-bundle/charts/runtime-bundle" \
+	      "example-runtime-bundle/charts/runtime-bundle-invalid" \
 	      "example-cloud-connector/charts/activiti-cloud-connector" \
 	      "activiti-cloud-modeling/charts/activiti-cloud-modeling"
 
@@ -29,7 +27,7 @@ updatebot:
 		org.activiti.cloud:activiti-cloud-runtime-bundle-dependencies ${ACTIVITI_CLOUD_VERSION} \
 		org.activiti.cloud:activiti-cloud-service-common-dependencies ${ACTIVITI_CLOUD_VERSION} \
 		--merge false;
-                
+
 	updatebot push-version --kind helm activiti-cloud-dependencies ${RELEASE_VERSION} \
 		runtime-bundle ${RELEASE_VERSION} \
 		activiti-cloud-connector ${RELEASE_VERSION} \
@@ -58,7 +56,7 @@ delete:
 	helm delete ${PREVIEW_NAMESPACE} --namespace  ${PREVIEW_NAMESPACE} || echo "try to remove helm chart"
 	kubectl delete ns ${PREVIEW_NAMESPACE} || echo "try to remove namespace ${PREVIEW_NAMESPACE}"
 
-release: 
+release:
 	echo "RELEASE_VERSION: $(RELEASE_VERSION)"
 	updatebot --dry push-version --kind helm activiti-cloud-dependencies $(RELEASE_VERSION)
 	cd $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && helm dep up
@@ -75,17 +73,17 @@ release:
 		cp $$(basename `pwd`)*.tgz $(CURRENT)/$(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/charts/; \
 		cd - ; \
 	done
-	
+
 	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/Chart.yaml
 	cat $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/requirements.yaml
 	ls $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR)/charts -la
-	
+
 	cd  $(ACTIVITI_CLOUD_FULL_EXAMPLE_DIR) && \
 		rm -rf requirements.lock && \
 		rm -rf *.tgz && \
 		helm lint && \
 		helm package .
-	
+
 publish:
 	@for CHART in $(CHARTS) ; do \
 		cd $$CHART ; \
@@ -95,7 +93,14 @@ publish:
 		make github; \
 		cd - ; \
 	done
-	
+
+invalid:
+	@for CHART in $(CHARTS) ; do \
+		cd $$CHART ; \
+		echo $(CURRENT); \
+		cd - ; \
+	done
+
 update-common-helm-chart-version:
 	@for CHART in $(CHARTS) ; do \
 		cd $$CHART ; \
@@ -103,7 +108,7 @@ update-common-helm-chart-version:
 		cd -; \
 	done
 
-docker/%: 
+docker/%:
 	$(eval MODULE=$(word 2, $(subst /, ,$@)))
 
 	mvn verify -B -pl $(MODULE) -am
@@ -117,7 +122,7 @@ version:
 deploy:
 	mvn clean deploy -DskipTests
 
-tag: 
+tag:
 	git add -u
 	git commit -m "Release $(RELEASE_VERSION)" --allow-empty
 	git tag -fa v$(RELEASE_VERSION) -m "Release version $(RELEASE_VERSION)" || travis_terminate 1;
