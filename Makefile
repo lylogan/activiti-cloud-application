@@ -102,9 +102,9 @@ invalid: $(CHARTS)/pwd
 $(CHARTS)/pwd:
 	$(eval CHART=$(word 1, $(subst /, ,$@)))
 
-	echo $CHART
-	cd $CHART
-	pwd
+	echo $$CHART && 
+	cd $$CHART && 
+	pwd 
 
 update-common-helm-chart-version:
 	@for CHART in $(CHARTS) ; do \
