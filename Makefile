@@ -96,11 +96,11 @@ publish:
 
 # The ONESHELL directive allows to write multiple line recipes to be executed in the same shell invocation.
 .ONESHELL:
+.SHELLFLAGS = -e
+invalid: pwd\$(CHARTS)
 
-invalid: $(CHARTS)/pwd
-
-$(CHARTS)/pwd:
-	$(eval CHART=$(word 1, $(subst /, ,$@)))
+pwd\$(CHARTS):
+	$(eval CHART=$(word 2, $(subst \, ,$@)))
 
 	echo $(CHART) && 
 	cd $(CHART) && 
