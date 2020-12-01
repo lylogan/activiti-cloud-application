@@ -94,10 +94,10 @@ publish:
 		cd - ; \
 	done
 
-invalid: pwd\$(CHARTS)
+invalid: pwd~$(CHARTS)
 
-pwd\$(CHARTS):
-	$(eval CHART=$(word 2, $(subst \, ,$@)))
+pwd~$(CHARTS):
+	$(eval CHART=$(word 2, $(subst ~, ,$@)))
 
 	echo $(CHART)
 	cd $(CHART) && pwd
