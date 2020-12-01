@@ -94,11 +94,17 @@ publish:
 		cd - ; \
 	done
 
-invalid: $(CHARTS)
-$(CHARTS):
-	echo $@ && \
-	cd $@ && \
-	pwd 
+# The ONESHELL directive allows to write multiple line recipes to be executed in the same shell invocation.
+.ONESHELL:
+
+invalid: $(CHARTS)/pwd
+
+$(CHARTS)/pwd:
+	$(eval CHART=$(word 1, $(subst /, ,$@)))
+
+	echo $CHART
+	cd $CHART
+	pwd
 
 update-common-helm-chart-version:
 	@for CHART in $(CHARTS) ; do \
