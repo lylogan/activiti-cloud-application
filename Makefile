@@ -102,8 +102,8 @@ invalid: pwd\$(CHARTS)
 pwd\$(CHARTS):
 	$(eval CHART=$(word 2, $(subst \, ,$@)))
 
-	echo $(CHART) && 
-	cd $(CHART) && 
+	echo $(CHART)
+	cd $(CHART)
 	pwd 
 
 update-common-helm-chart-version:
