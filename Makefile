@@ -94,13 +94,12 @@ publish:
 		cd - ; \
 	done
 
-invalid: $(CHARTS)\pwd
-
-$(foreach CHART,$(CHARTS),$(CHART)\pwd):
-	$(eval CHART=$(word 2, $(subst \, ,$@)))
-
-	echo $(CHART)
-	cd $(CHART) && pwd
+invalid: 
+	for CHART in $(CHARTS) ; do \
+		echo $$CHART; \
+		cd $$CHART && pwd || exit 1; \
+		cd -; \
+	done
 
 update-common-helm-chart-version:
 	@for CHART in $(CHARTS) ; do \
